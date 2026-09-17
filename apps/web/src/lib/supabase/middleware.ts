@@ -1,8 +1,13 @@
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+export async function updateSession(request: NextRequest, response?: NextResponse) {
+  const supabaseResponse = response || NextResponse.next({ request });
+
+  // Ensure a default locale is set if missing
+  if (!request.cookies.has('locale')) {
+    supabaseResponse.cookies.set('locale', 'fr')
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,11 +17,10 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -30,26 +34,84 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users to login (except auth pages)
-  const isAuthPage =
-    request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/signup') ||
-    request.nextUrl.pathname.startsWith('/reset-password');
+  const pathname = request.nextUrl.pathname;
+  
+  const matchesPath = (path: string) => 
+    pathname === path || (path !== '/' && pathname.startsWith(`${path}/`));
 
-  const isPublicPage = request.nextUrl.pathname === '/';
+  const isAuthPage = 
+    matchesPath('/login') ||
+    matchesPath('/signup') ||
+    matchesPath('/reset-password') ||
+    matchesPath('/auth');
+
+  const isPublicPage = matchesPath('/');
 
   // Unauthenticated guests: securely redirect from protected routes to login
   if (!user && !isAuthPage && !isPublicPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+    const url = new URL('/login', request.url);
+    const redirectResponse = NextResponse.redirect(url);
+    // Copy cookies from supabaseResponse to ensure session markers are preserved
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
   }
 
-  // Authenticated users: aggressively bypass auth and public pages straight into the dashboard
+  // Resolve role once — used both for home redirect and per-route guard
+  let role: string | null = null;
+  if (user) {
+    const profileRes = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`,
+      {
+        headers: {
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+        },
+      }
+    );
+    const profiles = await profileRes.json();
+    role = profiles?.[0]?.role ?? null;
+  }
+
+  const roleHome: Record<string, string> = {
+    institution_admin: '/dashboard',
+    teacher: '/teacher',
+    student: '/student',
+    super_admin: '/super',
+  };
+
+  const redirectTo = (dest: string) => {
+    const url = new URL(dest, request.url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
+  };
+
+  // Authenticated users: bypass auth/public pages into role-specific home
   if (user && (isAuthPage || isPublicPage)) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
+    return redirectTo(roleHome[role ?? ''] ?? '/dashboard');
+  }
+
+  // Per-route role enforcement
+  if (user && role) {
+    const isDashboardRoute = matchesPath('/dashboard');
+    const isTeacherRoute = matchesPath('/teacher');
+    const isStudentRoute = matchesPath('/student');
+    const isSuperRoute = matchesPath('/super');
+
+    const allowed =
+      (isDashboardRoute && (role === 'institution_admin' || role === 'super_admin')) ||
+      (isTeacherRoute && role === 'teacher') ||
+      (isStudentRoute && role === 'student') ||
+      (isSuperRoute && role === 'super_admin') ||
+      (!isDashboardRoute && !isTeacherRoute && !isStudentRoute && !isSuperRoute);
+
+    if (!allowed) {
+      return redirectTo(roleHome[role] ?? '/login');
+    }
   }
 
   return supabaseResponse;

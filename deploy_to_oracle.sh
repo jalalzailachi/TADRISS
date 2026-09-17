@@ -16,22 +16,35 @@ cd $APP_DIR
 pnpm run build
 cd -
 
-# Turborepo natively maps the standalone executable recursively reflecting the $APP_DIR structure
-SERVER_JS_PATH="$APP_DIR/.next/standalone/$APP_DIR/server.js"
-if [[ ! -f "$SERVER_JS_PATH" ]]; then
-  echo "Error: server.js not found natively in .next/standalone/$APP_DIR root!"
+# Dynamically find the server.js file within the standalone directory
+# In Next.js 15 standalone builds, the structure can be nested under the full project path
+FULL_STANDALONE_PATH="$(pwd)/$APP_DIR/.next/standalone"
+SERVER_JS_FULL_PATH=$(find "$FULL_STANDALONE_PATH" -name "server.js" | grep -v "node_modules" | head -n 1)
+
+if [[ -z "$SERVER_JS_FULL_PATH" ]]; then
+  echo "Error: server.js not found in $FULL_STANDALONE_PATH!"
   exit 1
 fi
-# The relative execution directory is simply the deeply nested APP_DIR natively
-SERVER_JS_RELATIVE_DIR="$APP_DIR"
+
+# The directory containing server.js relative to the standalone root
+SERVER_JS_RELATIVE_DIR=$(dirname "${SERVER_JS_FULL_PATH#$FULL_STANDALONE_PATH/}")
+
+echo "Found server.js at: $SERVER_JS_FULL_PATH"
+echo "Relative execution directory: $SERVER_JS_RELATIVE_DIR"
+
+echo "Found server.js at: $SERVER_JS_FULL_PATH"
+echo "Relative execution directory: $SERVER_JS_RELATIVE_DIR"
 
 echo -e "\n🔐 2. Ensuring SSH key has correct permissions..."
 chmod 600 "$SSH_KEY"
 
-echo -e "\n📁 3. Creating application directories on server..."
-ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "mkdir -p ~/tadriss-web/.next/static && mkdir -p ~/tadriss-web/$SERVER_JS_RELATIVE_DIR/.next/static"
+echo -e "\n🔥 3. Wiping the old application from the server entirely..."
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "pm2 delete tadriss-web 2>/dev/null || true; pm2 save --force 2>/dev/null || true; rm -rf ~/tadriss-web"
 
-echo -e "\n📦 4. Transferring files to Oracle server..."
+echo -e "\n📁 4. Creating fresh application directories on server..."
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "mkdir -p ~/tadriss-web/.next/static && mkdir -p ~/tadriss-web/$SERVER_JS_RELATIVE_DIR/.next/static && mkdir -p ~/tadriss-web/$SERVER_JS_RELATIVE_DIR/messages"
+
+echo -e "\n📦 5. Transferring files to Oracle server..."
 # Upload the standalone application code (maintains nested structure)
 rsync -avz --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" $APP_DIR/.next/standalone/ $SERVER_USER@$SERVER_IP:~/tadriss-web/
 # Upload static CSS/JS to the absolute root directory of standalone
@@ -41,12 +54,18 @@ rsync -avz --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" $APP_DIR/
 # ALSO upload CSS/JS strictly right next to the server.js binary to defeat Turbopack __dirname pathing bugs
 rsync -avz --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" $APP_DIR/.next/static/ $SERVER_USER@$SERVER_IP:~/tadriss-web/$SERVER_JS_RELATIVE_DIR/.next/static/
 rsync -avz --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" $APP_DIR/public/ $SERVER_USER@$SERVER_IP:~/tadriss-web/$SERVER_JS_RELATIVE_DIR/public/
+# CRITICAL: Upload the messages folder which is NOT traced effectively in standalone because of dynamic imports in i18n.ts
+rsync -avz --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" $APP_DIR/messages/ $SERVER_USER@$SERVER_IP:~/tadriss-web/$SERVER_JS_RELATIVE_DIR/messages/
+
 # Upload environment variables exclusively to the absolute root directory
 rsync -avz --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" $APP_DIR/.env.local $SERVER_USER@$SERVER_IP:~/tadriss-web/.env
 
-echo -e "\n⚙️ 5. Setting up Server (Node.js & PM2) and starting the app..."
+echo -e "\n⚙️ 6. Setting up Server (Node.js & PM2) and starting the app..."
 # Pass the nested directory variable to the remote script securely
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no /dev/null $SERVER_USER@$SERVER_IP:~/tadriss-web/.ready || true
+touch .ready
+scp -i "$SSH_KEY" -o StrictHostKeyChecking=no .ready $SERVER_USER@$SERVER_IP:~/tadriss-web/.ready || true
+rm .ready
+
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "SERVER_JS_RELATIVE_DIR='$SERVER_JS_RELATIVE_DIR'"' bash -s' << 'EOF'
   set -e
   
@@ -68,23 +87,34 @@ ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "SERVER_JS
   sed -i "s/'localhost'/'0.0.0.0'/g" $SERVER_JS_RELATIVE_DIR/server.js || true
   sed -i 's/process.env.HOSTNAME || "localhost"/"0.0.0.0"/g' $SERVER_JS_RELATIVE_DIR/server.js || true
 
-  # Automatically open port 3000 forcefully at PRIORITY 1 in the server's internal firewall for Nginx
-  echo "Opening port 3000 on server firewall at Priority #1..."
+  # Nginx proved fundamentally flawed against SELinux over loopback in this environment. 
+  # We are completely annihilating Nginx and shifting statically to Port 3000 manually.
+  echo "Terminating and purging Nginx..."
+  sudo systemctl stop nginx || true
+  sudo systemctl disable nginx || true
+  sudo rm -f /etc/nginx/conf.d/tadriss.conf || true
+
+  # Open Native Port 3000 securely on the OS firewall
+  echo "Opening native Port 3000 on Oracle Linux firewall..."
   sudo firewall-cmd --zone=public --add-port=3000/tcp --permanent 2>/dev/null || true
   sudo firewall-cmd --reload 2>/dev/null || true
   sudo ufw allow 3000/tcp 2>/dev/null || true
   sudo iptables -I INPUT 1 -p tcp --dport 3000 -j ACCEPT 2>/dev/null || true
   sudo netfilter-persistent save 2>/dev/null || true
 
-  # Force PM2 to delete the old instance so it stops caching anything old
+  # Force PM2 to stop everything existing
   if pm2 describe tadriss-web > /dev/null 2>&1; then
     pm2 delete tadriss-web
   fi
 
-  echo "Starting Tadriss Next.js Server on 127.0.0.1:3001..."
+  echo "Starting Tadriss Next.js Server natively bound to 0.0.0.0:3000..."
   # Next.js standalone does NOT load .env natively. We MUST aggressively inject it here!
   set -a; source ~/tadriss-web/.env 2>/dev/null || true; set +a
-  PORT=3001 HOSTNAME=127.0.0.1 pm2 start $SERVER_JS_RELATIVE_DIR/server.js --name tadriss-web --interpreter node -- -p 3001
+  
+  # Bind securely to PUBLIC port
+  # We MUST ensure TRUSTED_HOSTS is set for Server Actions to work behind proxies or direct IPs
+  # and that the PORT and HOSTNAME are correctly synchronized.
+  PORT=3000 HOSTNAME=0.0.0.0 pm2 start $SERVER_JS_RELATIVE_DIR/server.js --name tadriss-web --interpreter node -- -p 3000
   pm2 save
   sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $USER --hp /home/$USER || true
   pm2 save

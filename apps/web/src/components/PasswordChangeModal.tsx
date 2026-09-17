@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { getErrorMessage } from '@/lib/errors'
 import { createClient } from '@/lib/supabase/client';
 import { Modal } from './ui/Modal';
 import { useToast } from './ui/Toast';
+import { useTranslations } from 'next-intl';
 
 interface PasswordChangeModalProps {
   open: boolean;
@@ -17,15 +19,16 @@ export function PasswordChangeModal({ open, onClose, userId }: PasswordChangeMod
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
   const toast = useToast();
+  const t = useTranslations('passwordChange');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error(t('mismatch'));
       return;
     }
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error(t('minLength'));
       return;
     }
 
@@ -46,10 +49,10 @@ export function PasswordChangeModal({ open, onClose, userId }: PasswordChangeMod
 
       if (profileError) throw profileError;
 
-      toast.success('Password updated successfully');
+      toast.success(t('success'));
       onClose();
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -59,35 +62,35 @@ export function PasswordChangeModal({ open, onClose, userId }: PasswordChangeMod
     <Modal 
       open={open} 
       onClose={() => {}} // Force user to change password by disabling close if needed, but for UX we'll keep it simple
-      title="Security Update Required"
+      title={t('title')}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-          <p className="text-sm text-amber-800 font-medium">
-            For security reasons, you must change your temporary password before continuing.
+        <div className="bg-warning-soft border border-on-warning-soft/10 rounded-lg p-4 mb-4">
+          <p className="text-sm text-on-warning-soft font-medium">
+            {t('description')}
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+          <label className="block text-sm font-medium text-on-surface mb-1">{t('newPassword')}</label>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             placeholder="••••••••"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
+          <label className="block text-sm font-medium text-on-surface mb-1">{t('confirmPassword')}</label>
           <input
             type="password"
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             placeholder="••••••••"
           />
         </div>
@@ -95,9 +98,9 @@ export function PasswordChangeModal({ open, onClose, userId }: PasswordChangeMod
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50"
+          className="w-full py-2.5 bg-primary text-on-primary font-semibold rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
         >
-          {loading ? 'Updating...' : 'Update Password & Continue'}
+          {loading ? '...' : t('submit')}
         </button>
       </form>
     </Modal>

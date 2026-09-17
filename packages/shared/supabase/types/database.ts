@@ -133,6 +133,129 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['payments']['Insert']>;
       };
+      homework: {
+        Row: {
+          id: string;
+          institution_id: string;
+          class_id: string;
+          teacher_id: string;
+          title: string;
+          description: string | null;
+          due_date: string | null;
+          file_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['homework']['Row'], 'id' | 'created_at' | 'updated_at'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['homework']['Insert']>;
+      };
+      class_students: {
+        Row: {
+          id: string;
+          institution_id: string;
+          class_id: string;
+          student_id: string;
+          enrolled_at: string;
+          is_active: boolean;
+        };
+        Insert: Omit<Database['public']['Tables']['class_students']['Row'], 'id' | 'enrolled_at'> & {
+          id?: string;
+          enrolled_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['class_students']['Insert']>;
+      };
+      class_teachers: {
+        Row: {
+          id: string;
+          institution_id: string;
+          class_id: string;
+          teacher_id: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['class_teachers']['Row'], 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['class_teachers']['Insert']>;
+      };
+      enrollment_fees: {
+        Row: {
+          id: string;
+          institution_id: string;
+          student_id: string;
+          class_id: string | null;
+          amount: number;
+          period_type: 'monthly' | 'semester' | 'annual' | 'one_time';
+          label: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['enrollment_fees']['Row'], 'id' | 'created_at' | 'updated_at'> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['enrollment_fees']['Insert']>;
+      };
+      broadcasts: {
+        Row: {
+          id: string;
+          institution_id: string;
+          sender_id: string;
+          title: string;
+          message: string;
+          role_target: string | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['broadcasts']['Row'], 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['broadcasts']['Insert']>;
+      };
+      messages: {
+        Row: {
+          id: string;
+          institution_id: string;
+          sender_id: string;
+          subject: string;
+          body: string;
+          sent_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['messages']['Row'], 'id' | 'sent_at'> & {
+          id?: string;
+          sent_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['messages']['Insert']>;
+      };
+      message_recipients: {
+        Row: {
+          id: string;
+          message_id: string;
+          user_id: string;
+          is_read: boolean;
+          read_at: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['message_recipients']['Row'], 'id' | 'is_read' | 'read_at'> & {
+          id?: string;
+          is_read?: boolean;
+          read_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['message_recipients']['Insert']>;
+      };
     };
   };
 }
+
+/** Convenience helpers for referencing generated row/insert/update shapes. */
+export type Tables<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Row'];
+export type TablesInsert<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Insert'];
+export type TablesUpdate<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Update'];

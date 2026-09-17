@@ -34,14 +34,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ success, error }}>
       {children}
-      <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2">
+      <div className="fixed bottom-6 end-6 z-[100] flex flex-col gap-2">
         {toasts.map((t) => (
           <div
             key={t.id}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium animate-[slideIn_0.3s_ease] ${
               t.type === 'success'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-red-600 text-white'
+                ? 'bg-tertiary text-on-tertiary'
+                : 'bg-error text-on-error'
             }`}
           >
             <span className="material-symbols-outlined text-lg">

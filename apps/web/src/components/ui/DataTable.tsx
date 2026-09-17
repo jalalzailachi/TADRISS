@@ -1,160 +1,125 @@
-'use client';
-
-import { useState, useMemo } from 'react';
+'use client'
+import React, { useState } from 'react'
 
 interface Column<T> {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  render?: (row: T) => React.ReactNode;
+  key: string
+  label: string
+  sortable?: boolean
+  render?: (row: T) => React.ReactNode
 }
 
-interface DataTableProps<T> {
-  columns: Column<T>[];
-  data: T[];
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  pageSize?: number;
-  emptyMessage?: string;
-  actions?: React.ReactNode;
-}
-
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends object>({
   columns,
   data,
-  searchable = true,
-  searchPlaceholder = 'Search...',
-  pageSize = 10,
-  emptyMessage = 'No data found',
-  actions,
-}: DataTableProps<T>) {
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
-  const [sortKey, setSortKey] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  emptyMessage,
+  emptyState,
+  onRowClick,
+  itemsPerPage = 10,
+  // Server-side pagination props
+  onPageChange,
+  totalPages: externalTotalPages,
+  currentPage: externalCurrentPage,
+  totalItems,
+}: {
+  columns: Column<T>[]
+  data: T[]
+  emptyMessage?: string
+  emptyState?: React.ReactNode
+  onRowClick?: (row: T) => void
+  itemsPerPage?: number
+  onPageChange?: (page: number) => void
+  totalPages?: number
+  currentPage?: number
+  totalItems?: number
+}) {
+  const [internalCurrentPage, setInternalCurrentPage] = useState(1)
+  
+  const isServerSide = !!onPageChange
+  const currentPage = isServerSide ? (externalCurrentPage || 1) : internalCurrentPage
+  const totalPages = isServerSide 
+    ? (externalTotalPages || 1) 
+    : Math.max(1, Math.ceil(data.length / itemsPerPage))
 
-  const filtered = useMemo(() => {
-    if (!search) return data;
-    const q = search.toLowerCase();
-    return data.filter((row) =>
-      columns.some((col) => {
-        const val = row[col.key];
-        return val && String(val).toLowerCase().includes(q);
-      })
-    );
-  }, [data, search, columns]);
+  const visibleData = isServerSide 
+    ? data 
+    : data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
-  const sorted = useMemo(() => {
-    if (!sortKey) return filtered;
-    return [...filtered].sort((a, b) => {
-      const aVal = a[sortKey] ?? '';
-      const bVal = b[sortKey] ?? '';
-      const cmp = String(aVal).localeCompare(String(bVal));
-      return sortDir === 'asc' ? cmp : -cmp;
-    });
-  }, [filtered, sortKey, sortDir]);
-
-  const totalPages = Math.ceil(sorted.length / pageSize);
-  const paged = sorted.slice(page * pageSize, (page + 1) * pageSize);
-
-  function handleSort(key: string) {
-    if (sortKey === key) {
-      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
+  if (data.length === 0) {
+    if (emptyState) return <div className="p-8">{emptyState}</div>
+    return (
+      <div className="p-20 text-center bg-surface-container-lowest dark:bg-surface-container border border-outline-variant/10 rounded-[32px]">
+        <span className="material-symbols-outlined text-4xl text-outline/20 mb-4">inventory_2</span>
+        <p className="text-sm font-black text-outline uppercase tracking-widest leading-none italic">{emptyMessage}</p>
+      </div>
+    )
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      {(searchable || actions) && (
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-4">
-          {searchable && (
-            <div className="relative flex-1 max-w-sm">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-              <input
-                type="text"
-                placeholder={searchPlaceholder}
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-            </div>
-          )}
-          {actions && <div className="flex items-center gap-2">{actions}</div>}
-        </div>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
+    <div className="rounded-2xl border border-outline-variant/10 bg-surface-container-lowest dark:bg-surface-container overflow-hidden shadow-sm">
+      <div className="overflow-x-auto no-scrollbar">
+        <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-slate-50">
-              {columns.map((col) => (
+            <tr className="bg-surface-container-low/50 border-b border-outline-variant/10">
+              {columns.map(col => (
                 <th
                   key={col.key}
-                  onClick={col.sortable ? () => handleSort(col.key) : undefined}
-                  className={`px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider ${
-                    col.sortable ? 'cursor-pointer hover:text-slate-700 select-none' : ''
-                  }`}
+                  className="px-4 py-4 sm:px-8 sm:py-5 text-start text-[10px] font-black text-outline uppercase tracking-widest whitespace-nowrap"
                 >
-                  <span className="flex items-center gap-1">
-                    {col.label}
-                    {col.sortable && sortKey === col.key && (
-                      <span className="material-symbols-outlined text-sm">
-                        {sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward'}
-                      </span>
-                    )}
-                  </span>
+                  {col.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
-            {paged.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-sm text-slate-400">
-                  {emptyMessage}
-                </td>
+          <tbody className="divide-y divide-outline-variant/5">
+            {visibleData.map((row, i) => (
+              <tr
+                key={i}
+                onClick={() => onRowClick?.(row)}
+                className={`group transition-colors duration-150 hover:bg-surface-container-low/30 dark:hover:bg-surface-container-high/40 ${i % 2 === 1 ? 'bg-surface-container-low/20 dark:bg-surface-container-high/10' : ''} ${onRowClick ? 'cursor-pointer' : ''}`}
+              >
+                {columns.map((col, colIndex) => (
+                  <td
+                    key={col.key}
+                    className={`px-4 py-3 sm:px-8 sm:py-[var(--table-row-py)] text-sm whitespace-nowrap ${colIndex === 0 ? 'font-black text-on-surface uppercase tracking-tight' : 'font-medium text-outline'}`}
+                  >
+                    {col.render ? col.render(row) : ((row as Record<string, unknown>)[col.key] as React.ReactNode)}
+                  </td>
+                ))}
               </tr>
-            ) : (
-              paged.map((row, i) => (
-                <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                  {columns.map((col) => (
-                    <td key={col.key} className="px-6 py-4 text-sm text-slate-700">
-                      {col.render ? col.render(row) : row[col.key]}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
 
       {totalPages > 1 && (
-        <div className="px-6 py-3 border-t border-slate-100 flex items-center justify-between text-sm">
-          <span className="text-slate-500">
-            Showing {page * pageSize + 1}–{Math.min((page + 1) * pageSize, sorted.length)} of {sorted.length}
+        <div className="flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5 bg-surface-container-low/30 border-t border-outline-variant/10">
+          <span className="text-[10px] font-black text-outline uppercase tracking-widest">
+            Page {currentPage} of {totalPages} {totalItems !== undefined && `(${totalItems} total)`}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setPage(Math.max(0, page - 1))}
-              disabled={page === 0}
-              className="px-3 py-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={currentPage === 1}
+              onClick={() => {
+                if (onPageChange) onPageChange(currentPage - 1)
+                else setInternalCurrentPage(p => Math.max(1, p - 1))
+              }}
+              className="h-10 w-10 flex items-center justify-center rounded-xl border border-outline-variant/30 text-outline hover:bg-on-surface hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-outline"
             >
-              Previous
+              <span className="material-symbols-outlined text-[20px]">chevron_left</span>
             </button>
             <button
-              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
-              disabled={page >= totalPages - 1}
-              className="px-3 py-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={currentPage === totalPages}
+              onClick={() => {
+                if (onPageChange) onPageChange(currentPage + 1)
+                else setInternalCurrentPage(p => Math.min(totalPages, p + 1))
+              }}
+              className="h-10 w-10 flex items-center justify-center rounded-xl border border-outline-variant/30 text-outline hover:bg-on-surface hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-outline"
             >
-              Next
+              <span className="material-symbols-outlined text-[20px]">chevron_right</span>
             </button>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

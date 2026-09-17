@@ -22,7 +22,9 @@ serve(async (req) => {
     // SECURITY: Protect onboarding with a secret key to prevent spam
     const onboardingToken = req.headers.get('X-Onboarding-Token');
     const secretToken = Deno.env.get('ONBOARDING_SECRET');
+    
     if (secretToken && onboardingToken !== secretToken) {
+      console.error('Invalid onboarding token');
       return new Response(
         JSON.stringify({ error: 'Forbidden: Invalid onboarding token' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -30,9 +32,18 @@ serve(async (req) => {
     }
 
     const body = await req.json();
+    console.log('Onboarding request for:', body.email);
     
     // 1. Validate basic institution data
-    const { name, slug, email } = institutionSchema.parse(body);
+    const validatedInst = institutionSchema.safeParse(body);
+    if (!validatedInst.success) {
+      console.error('Validation error:', validatedInst.error);
+      return new Response(
+        JSON.stringify({ error: 'Validation failed', details: validatedInst.error }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    const { name, slug, email } = validatedInst.data;
     // Profile data validation
     const { first_name, last_name, password } = body;
     if (!password || !first_name || !last_name) {

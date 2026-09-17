@@ -1,22 +1,29 @@
-interface BadgeProps {
-  variant: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
-  children: React.ReactNode;
+const variants = {
+  present: 'bg-success-soft text-on-success-soft',
+  absent:  'bg-error-soft text-on-error-soft',
+  late:    'bg-warning-soft text-on-warning-soft',
+  paid:    'bg-success-soft text-on-success-soft',
+  pending: 'bg-warning-soft text-on-warning-soft',
+  voided:  'bg-surface-container-high text-outline',
+  admin:   'bg-info-soft text-on-info-soft',
+  teacher: 'bg-teacher-soft text-on-teacher-soft',
+  student: 'bg-student-soft text-on-student-soft',
+  active:  'bg-success-soft text-on-success-soft',
+  primary: 'bg-primary/10 text-primary',
+  neutral: 'bg-surface-container-high text-on-surface-variant',
+  warning: 'bg-warning-soft text-on-warning-soft',
+  success: 'bg-success-soft text-on-success-soft',
+  danger:  'bg-error-soft text-on-error-soft',
 }
 
-const variants = {
-  success: 'bg-emerald-100 text-emerald-800',
-  warning: 'bg-amber-100 text-amber-800',
-  danger: 'bg-red-100 text-red-800',
-  info: 'bg-blue-100 text-blue-800',
-  neutral: 'bg-slate-100 text-slate-700',
-};
-
-export function Badge({ variant, children }: BadgeProps) {
+export function Badge({ variant, label }: {
+  variant: keyof typeof variants
+  label: string
+}) {
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${variants[variant]}`}
-    >
-      {children}
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full
+                      text-xs font-semibold ${variants[variant]}`}>
+      {label}
     </span>
-  );
+  )
 }

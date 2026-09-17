@@ -7,7 +7,8 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
-    "db:gen-types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" > packages/shared/supabase/types/database.ts"
+    "db:gen-types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" > packages/shared/supabase/types/database.ts",
+    "db:seed": "npx supabase db reset && npx tsx supabase/seed-auth.ts"
   },
   "devDependencies": {
     "turbo": "^2.4.0",
