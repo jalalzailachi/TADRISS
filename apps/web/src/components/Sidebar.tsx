@@ -164,10 +164,10 @@ export function Sidebar({ role, userName, institutionName }: {
              <Link
                href="/dashboard/settings"
                className={`flex items-center bg-surface-container-low rounded-xl border border-outline-variant/5 h-10 hover:bg-on-surface hover:text-white transition-all group/set ${isCollapsed ? 'w-10 justify-center' : 'px-3 gap-3'}`}
-               title={tc('settings')}
+               title={t('settings')}
              >
                <span className="material-symbols-outlined text-[20px] group-hover/set:rotate-90 transition-transform">settings</span>
-               {!isCollapsed && <span className="text-[11px] font-black uppercase tracking-widest">{tc('settings')}</span>}
+               {!isCollapsed && <span className="text-[11px] font-black uppercase tracking-widest">{t('settings')}</span>}
              </Link>
            )}
            <div className={`flex items-center bg-surface-container-low rounded-xl border border-outline-variant/5 h-10 hover:bg-error/10 transition-all ${isCollapsed ? 'w-10 justify-center' : 'min-w-[140px]'}`}>
@@ -217,11 +217,6 @@ export function Sidebar({ role, userName, institutionName }: {
           </div>
           <span className="text-lg font-black italic uppercase tracking-tighter text-on-surface">Tadriss</span>
         </Link>
-        <div className="flex items-center gap-2">
-           <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface shadow-sm overflow-hidden">
-             <ThemeToggle />
-           </div>
-        </div>
       </div>
 
       {/* Bottom Tab Bar */}

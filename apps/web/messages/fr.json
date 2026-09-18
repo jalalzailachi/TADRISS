@@ -460,7 +460,8 @@
     "ago": "il y a",
     "enrollment": "Inscription",
     "status": "Statut",
-    "active": "Actif"
+    "active": "Actif",
+    "title": "Titre"
   },
   "passwordChange": {
     "title": "Définir votre mot de passe",
@@ -703,5 +704,18 @@
       "rights": "© {year} Tadriss. Tous droits réservés.",
       "tagline": "Conçu pour l'éducation marocaine"
     }
+  },
+  "support": {
+    "tooltip": "Aide & support",
+    "title": "Centre d’assistance",
+    "kbTitle": "Base de connaissances",
+    "kbDesc": "Manuel du système et optimisation des flux",
+    "contactTitle": "Réponse directe",
+    "contactDesc": "Assistance stratégique de notre équipe",
+    "onboardingTitle": "Intégration de l’établissement",
+    "onboardingPhase": "Phase actuelle : optimisation active",
+    "step1": "Étape 1 : initialisation du corps enseignant",
+    "step2": "Étape 2 : configuration du registre des élèves",
+    "close": "Fermer"
   }
 }

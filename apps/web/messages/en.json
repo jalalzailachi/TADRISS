@@ -469,7 +469,8 @@
     "ago": "ago",
     "enrollment": "Enrollment",
     "status": "Status",
-    "active": "Active"
+    "active": "Active",
+    "title": "Title"
   },
   "passwordChange": {
     "title": "Set Your Password",
@@ -712,5 +713,18 @@
       "rights": "© {year} Tadriss. All rights reserved.",
       "tagline": "Built for Moroccan Education"
     }
+  },
+  "support": {
+    "tooltip": "Help & support",
+    "title": "Support center",
+    "kbTitle": "Knowledge base",
+    "kbDesc": "System manual & workflow optimization",
+    "contactTitle": "Direct response",
+    "contactDesc": "Strategic assistance from our team",
+    "onboardingTitle": "Institutional onboarding",
+    "onboardingPhase": "Current phase: active optimization",
+    "step1": "Step 1: faculty initialization",
+    "step2": "Step 2: student ledger setup",
+    "close": "Close"
   }
 }
