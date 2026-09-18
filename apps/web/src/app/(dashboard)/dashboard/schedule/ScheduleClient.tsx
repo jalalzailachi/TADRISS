@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { useLocale } from 'next-intl';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { SlideOver } from '@/components/ui/SlideOver';
@@ -39,7 +40,12 @@ interface Teacher {
   last_name: string;
 }
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// Localized short weekday names, index 0 = Sunday (2023-01-01 was a Sunday),
+// matching the numeric day_of_week (0..6) stored on schedule entries.
+const localizedDays = (locale: string) =>
+  Array.from({ length: 7 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(Date.UTC(2023, 0, 1 + i)))
+  );
 
 export function ScheduleClient({
   classes,
@@ -52,6 +58,8 @@ export function ScheduleClient({
   schedules: ScheduleEntry[];
   teachers: Teacher[];
 }) {
+  const locale = useLocale();
+  const DAYS = localizedDays(locale);
   const [classId, setClassId] = useState<string>(classes[0]?.id ?? '');
   const [isPending, startTransition] = useTransition();
   const [cellOpen, setCellOpen] = useState(false);

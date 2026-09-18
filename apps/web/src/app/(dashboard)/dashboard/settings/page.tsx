@@ -223,7 +223,7 @@ export default function SettingsPage() {
       />
 
       {/* Premium Tabs */}
-      <div className="flex items-center gap-2 p-1 bg-surface-container-lowest rounded-2xl border border-outline-variant/5 shadow-sm w-fit anim-in">
+      <div className="flex items-center gap-2 p-1 bg-surface-container-lowest rounded-2xl border border-outline-variant/5 shadow-sm w-fit max-w-full overflow-x-auto no-scrollbar anim-in">
         {[
           { key: 'institution', label: t('tabInstitution'), icon: 'business' },
           { key: 'fees', label: t('tabFees'), icon: 'payments' },
@@ -233,7 +233,7 @@ export default function SettingsPage() {
             key={t_.key}
             onClick={() => setTab(t_.key as Tab)}
             className={`
-              flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest
+              flex items-center gap-2 shrink-0 whitespace-nowrap px-6 py-3 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest
               ${tab === t_.key 
                 ? 'bg-on-surface text-surface shadow-lg scale-[1.02]' 
                 : 'text-outline-variant hover:text-on-surface hover:bg-surface-container-high/50'}

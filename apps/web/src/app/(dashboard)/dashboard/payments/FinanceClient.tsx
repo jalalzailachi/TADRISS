@@ -336,7 +336,7 @@ export function FinanceClient({
       />
 
       {/* ── Tab Switcher ── */}
-      <div className="flex items-center gap-2 p-1.5 bg-surface-container-lowest dark:bg-surface-container rounded-2xl border border-outline-variant/5 shadow-sm w-fit anim-in">
+      <div className="flex items-center gap-2 p-1.5 bg-surface-container-lowest dark:bg-surface-container rounded-2xl border border-outline-variant/5 shadow-sm w-fit max-w-full overflow-x-auto no-scrollbar anim-in">
         {([
           { key: 'payments', label: t('tabPayments'), icon: 'payments' },
           { key: 'fees', label: t('tabFees'), icon: 'receipt_long' },
@@ -345,7 +345,7 @@ export function FinanceClient({
           <button
             key={item.key}
             onClick={() => switchTab(item.key)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest
+            className={`flex items-center gap-2 shrink-0 whitespace-nowrap px-6 py-3 rounded-xl text-[10px] font-black transition-all uppercase tracking-widest
               ${tab === item.key
                 ? 'bg-on-surface text-surface shadow-lg scale-[1.02]'
                 : 'text-outline-variant hover:text-on-surface hover:bg-surface-container-high/50'}`}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useLocale } from 'next-intl';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -24,7 +25,11 @@ interface Class {
   name: string;
 }
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// Localized short weekday names, index 0 = Sunday, matching day_of_week (0..6).
+const localizedDays = (locale: string) =>
+  Array.from({ length: 7 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(Date.UTC(2023, 0, 1 + i)))
+  );
 
 export function TeacherScheduleClient({
   periods,
@@ -35,6 +40,8 @@ export function TeacherScheduleClient({
   schedules: ScheduleEntry[];
   classes: Class[];
 }) {
+  const locale = useLocale();
+  const DAYS = localizedDays(locale);
   const classMap = useMemo(
     () => new Map(classes.map((c) => [c.id, c])),
     [classes]
