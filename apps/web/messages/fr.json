@@ -415,7 +415,11 @@
     "emailNotConfirmed": "Veuillez confirmer votre email",
     "error": "Une erreur est survenue",
     "emailAlreadyExists": "Un compte avec cet email existe déjà. Veuillez vous connecter.",
-    "slugTaken": "Cet identifiant URL est déjà pris. Veuillez en choisir un autre."
+    "slugTaken": "Cet identifiant URL est déjà pris. Veuillez en choisir un autre.",
+    "signupTitle": "Rejoignez Tadriss",
+    "signupSubtitle": "Enregistrez votre établissement en quelques secondes",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "loginAction": "Connectez-vous ici"
   },
   "common": {
     "save": "Enregistrer",
@@ -428,7 +432,7 @@
     "currency": "MAD",
     "optional": "Optionnel",
     "privilegedAccess": "Accès Privilégié",
-    "securedBy": "S\u00e9curit\u00e9 Institutionnelle \u2022 Prot\u00e9g\u00e9 par Tadriss",
+    "securedBy": "Sécurité Institutionnelle • Protégé par Tadriss",
     "online": "En ligne",
     "roles": {
       "institution_admin": "Noyau Administratif",
@@ -673,10 +677,22 @@
       ]
     },
     "stats": [
-      { "value": "100%", "label": "Support RTL Arabe" },
-      { "value": "3", "label": "Tableaux de bord" },
-      { "value": "∞", "label": "Élèves & Classes" },
-      { "value": "24/7", "label": "Disponibilité garantie" }
+      {
+        "value": "100%",
+        "label": "Support RTL Arabe"
+      },
+      {
+        "value": "3",
+        "label": "Tableaux de bord"
+      },
+      {
+        "value": "∞",
+        "label": "Élèves & Classes"
+      },
+      {
+        "value": "24/7",
+        "label": "Disponibilité garantie"
+      }
     ],
     "ctaBanner": {
       "headline": "Prêt à moderniser votre école ?",

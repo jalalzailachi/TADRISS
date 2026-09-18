@@ -429,7 +429,11 @@
     "emailNotConfirmed": "Please confirm your email first",
     "error": "An error occurred",
     "emailAlreadyExists": "An account with this email already exists. Please log in instead.",
-    "slugTaken": "This URL identifier is already taken. Please choose another."
+    "slugTaken": "This URL identifier is already taken. Please choose another.",
+    "signupTitle": "Join Tadriss",
+    "signupSubtitle": "Register your institution in seconds",
+    "hasAccount": "Already have an account?",
+    "loginAction": "Sign in here"
   },
   "common": {
     "save": "Save",
@@ -456,7 +460,7 @@
     "loading": "Loading...",
     "currency": "MAD",
     "privilegedAccess": "Privileged Access",
-    "securedBy": "Institutional Safety \u2022 Secured by Tadriss",
+    "securedBy": "Institutional Safety • Secured by Tadriss",
     "online": "Online",
     "notifications": "Notifications",
     "markAllRead": "Mark all read",
@@ -682,10 +686,22 @@
       ]
     },
     "stats": [
-      { "value": "100%", "label": "RTL Arabic Support" },
-      { "value": "3", "label": "Role Dashboards" },
-      { "value": "∞", "label": "Students & Classes" },
-      { "value": "24/7", "label": "Uptime Guarantee" }
+      {
+        "value": "100%",
+        "label": "RTL Arabic Support"
+      },
+      {
+        "value": "3",
+        "label": "Role Dashboards"
+      },
+      {
+        "value": "∞",
+        "label": "Students & Classes"
+      },
+      {
+        "value": "24/7",
+        "label": "Uptime Guarantee"
+      }
     ],
     "ctaBanner": {
       "headline": "Ready to modernize your school?",
