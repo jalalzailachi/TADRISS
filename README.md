@@ -254,3 +254,4 @@ All tables are protected with RLS policies. Access is controlled via JWT claims:
 
 Private — All rights reserved.
 # TADRISS
+# tadrtis
