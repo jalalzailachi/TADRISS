@@ -44,3 +44,7 @@ SKILL.md
 apps/web/implementation_plan.md
 skills/
 files/
+
+# Stray SSH keys (never commit private keys)
+sshkey
+sshkey.pub
