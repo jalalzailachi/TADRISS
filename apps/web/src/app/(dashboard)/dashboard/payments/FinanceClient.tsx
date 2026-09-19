@@ -670,7 +670,7 @@ export function FinanceClient({
               </div>
             </div>
           </div>
-          <div className="flex gap-4 justify-end pt-8">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-8">
             <button type="button" onClick={() => setShowPaymentModal(false)} className="h-11 px-8 rounded-2xl text-sm font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all" disabled={isPending}>{tc('cancel')}</button>
             <button type="submit" className="h-11 px-10 bg-on-surface text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-3" disabled={isPending}>
               {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
@@ -734,7 +734,7 @@ export function FinanceClient({
               <span className="material-symbols-outlined absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
             </div>
           </div>
-          <div className="flex gap-4 justify-end pt-6">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-6">
             <button type="button" onClick={() => setShowFeeModal(false)} className="h-11 px-8 rounded-2xl text-sm font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all" disabled={isPending}>{tc('cancel')}</button>
             <button type="submit" className="h-11 px-10 bg-on-surface text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-3" disabled={isPending}>
               {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
@@ -791,7 +791,7 @@ export function FinanceClient({
               </div>
             </div>
           </div>
-          <div className="flex gap-4 justify-end pt-6">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-6">
             <button type="button" onClick={() => setShowBulkFeeModal(false)} className="h-11 px-8 rounded-2xl text-sm font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all" disabled={isPending}>{tc('cancel')}</button>
             <button type="submit" className="h-11 px-10 bg-on-surface text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-3" disabled={isPending}>
               {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}

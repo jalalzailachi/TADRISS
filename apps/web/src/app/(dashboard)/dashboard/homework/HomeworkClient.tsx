@@ -243,7 +243,7 @@ function HomeworkForm({ defaultValues, classes, onSubmit, onCancel, loading, sub
           <textarea name="description" className="w-full min-h-[120px] rtl:pr-12 ltr:pl-12 ps-12 pe-4 py-4 bg-surface-container-low border border-outline-variant/30 rounded-2xl text-sm font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none resize-none" defaultValue={defaultValues?.description ?? ''} placeholder={t('instructionPlaceholder')} />
         </div>
       </div>
-      <div className="flex gap-4 justify-end pt-6">
+      <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-6">
         <button type="button" onClick={onCancel} className="h-12 px-6 rounded-2xl text-sm font-bold text-outline hover:bg-surface-container-high transition-all" disabled={loading}>{tc('cancel')}</button>
         <button type="submit" className="h-12 px-8 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2" disabled={loading}>
           {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}

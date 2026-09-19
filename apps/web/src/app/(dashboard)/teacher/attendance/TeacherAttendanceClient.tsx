@@ -290,7 +290,7 @@ export function TeacherAttendanceClient(
             </div>
           </div>
           
-          <div className="flex gap-4 justify-end pt-8">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-8">
             <button 
               type="button" 
               onClick={() => setShowCreate(false)} 

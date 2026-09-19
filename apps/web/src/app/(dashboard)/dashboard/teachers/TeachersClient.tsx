@@ -276,7 +276,7 @@ function TeacherForm({ defaultValues, onSubmit, onCancel, loading }: TeacherForm
            <input name="phone" className="w-full h-12 ps-12 pe-4 bg-surface-container-low border border-outline-variant/30 rounded-2xl text-sm font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none" defaultValue={defaultValues?.phone ?? undefined} placeholder={t('phonePlaceholder')} />
         </div>
       </div>
-      <div className="flex gap-4 justify-end pt-6">
+      <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-6">
         <button type="button" onClick={onCancel} className="h-12 px-6 rounded-2xl text-sm font-bold text-outline hover:bg-surface-container-high transition-all" disabled={loading}>{tc('cancel')}</button>
         <button type="submit" className="h-12 px-8 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center gap-2" disabled={loading}>
           {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}

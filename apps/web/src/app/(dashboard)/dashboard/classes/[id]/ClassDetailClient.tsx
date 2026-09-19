@@ -349,7 +349,7 @@ export function ClassDetailClient({
               <span className="material-symbols-outlined absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-8 border-t border-outline-variant/10">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-8 border-t border-outline-variant/10">
             <button onClick={() => { setShowAddStudent(false); setModalError('') }} className="h-14 px-8 rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all">{tc('cancel')}</button>
             <button
               onClick={handleEnroll}
@@ -392,7 +392,7 @@ export function ClassDetailClient({
               <span className="material-symbols-outlined absolute end-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
             </div>
           </div>
-          <div className="flex justify-end gap-3 pt-8 border-t border-outline-variant/10">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-8 border-t border-outline-variant/10">
             <button onClick={() => { setShowAddTeacher(false); setModalError('') }} className="h-14 px-8 rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all">{tc('cancel')}</button>
             <button
               onClick={handleAssignTeacher}

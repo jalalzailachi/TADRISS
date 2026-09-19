@@ -263,9 +263,9 @@ function ClassForm({ defaultValues, onSubmit, onCancel, loading, error, submitLa
           {error}
         </div>
       )}
-      <div className="flex gap-4 justify-end pt-8 border-t border-outline-variant/10">
-        <button type="button" onClick={onCancel} className="h-14 px-8 rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all" disabled={loading}>{tc('cancel')}</button>
-        <button type="submit" className="h-14 px-10 bg-on-surface text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center gap-3" disabled={loading}>
+      <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-8 border-t border-outline-variant/10">
+        <button type="button" onClick={onCancel} className="h-14 px-8 w-full sm:w-auto rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all" disabled={loading}>{tc('cancel')}</button>
+        <button type="submit" className="h-14 px-10 w-full sm:w-auto bg-on-surface text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 whitespace-nowrap" disabled={loading}>
           {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
           {loading ? tc('loading') : submitLabel}
         </button>

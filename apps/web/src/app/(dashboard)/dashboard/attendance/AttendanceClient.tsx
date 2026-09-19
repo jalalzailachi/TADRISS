@@ -224,7 +224,7 @@ export function AttendanceClient({ sessions, classes }: { sessions: AttendanceSe
                <textarea name="notes" className="w-full min-h-[140px] ps-12 pe-4 py-4 bg-surface-container-low border border-outline-variant/30 rounded-2xl text-sm font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none resize-none" placeholder={t('notesPlaceholder')} />
             </div>
           </div>
-          <div className="flex gap-4 justify-end pt-8">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-8">
             <button type="button" onClick={() => setShowCreate(false)} className="h-11 px-8 rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all" disabled={isPending}>{tc('cancel')}</button>
             <button type="submit" className="h-11 px-10 bg-on-surface text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center gap-3" disabled={isPending}>
               {isPending && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}

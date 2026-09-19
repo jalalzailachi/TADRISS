@@ -450,7 +450,7 @@ export default function SettingsPage() {
                </div>
              </div>
           </div>
-          <div className="flex justify-end gap-4 pt-10 border-t border-outline-variant/10">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-10 border-t border-outline-variant/10">
             <button type="button" onClick={() => setFeeModal(false)} className="h-11 px-8 rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all">{common('cancel')}</button>
             <button type="submit" disabled={isPending} className="h-11 px-10 bg-on-surface text-surface rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-on-surface/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3">
                {isPending && <div className="w-4 h-4 border-2 border-surface/30 border-t-surface rounded-full animate-spin" />}
