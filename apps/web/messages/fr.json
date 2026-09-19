@@ -295,7 +295,8 @@
     "sessionNotes": "Notes de session",
     "sessionNotesPlaceholder": "ex: Journée de révision",
     "errorResolveInstitution": "Impossible de résoudre l'établissement.",
-    "errorCreateSession": "Impossible de créer la session."
+    "errorCreateSession": "Impossible de créer la session.",
+    "recordedCount": "présences"
   },
   "homework": {
     "title": "Devoirs",

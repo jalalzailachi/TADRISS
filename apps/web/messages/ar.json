@@ -291,7 +291,8 @@
     "sessionNotes": "ملاحظات الحصة",
     "sessionNotesPlaceholder": "مثلا: يوم مراجعة",
     "errorResolveInstitution": "فشل في تحديد المؤسسة.",
-    "errorCreateSession": "فشل في إنشاء الحصة."
+    "errorCreateSession": "فشل في إنشاء الحصة.",
+    "recordedCount": "حضور"
   },
   "homework": {
     "title": "الواجبات المنزلية",

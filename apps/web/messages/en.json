@@ -310,7 +310,8 @@
     "sessionNotes": "Session Notes",
     "sessionNotesPlaceholder": "e.g. Midterm review day",
     "errorResolveInstitution": "Failed to resolve institution.",
-    "errorCreateSession": "Failed to create session."
+    "errorCreateSession": "Failed to create session.",
+    "recordedCount": "records"
   },
   "homework": {
     "title": "Homework",

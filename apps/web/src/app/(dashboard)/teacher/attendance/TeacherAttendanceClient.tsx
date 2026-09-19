@@ -29,6 +29,7 @@ export function TeacherAttendanceClient(
 ) {
   const t = useTranslations('attendance')
   const locale = useLocale()
+  const tc = useTranslations('common')
   const router = useRouter()
   
   const [showCreate, setShowCreate] = useState(false)
@@ -88,7 +89,7 @@ export function TeacherAttendanceClient(
       <div className="flex justify-between items-end pb-4 border-b border-outline-variant/10">
         <div>
           <h1 className="text-4xl font-black text-on-surface uppercase tracking-tighter">{t('title')}</h1>
-          <p className="text-sm text-outline font-bold uppercase tracking-widest mt-1">Teacher Operations Terminal</p>
+          <p className="text-sm text-outline font-bold uppercase tracking-widest mt-1">{t('takeAttendance')}</p>
         </div>
         {!activeSession && (
           <button 
@@ -118,12 +119,12 @@ export function TeacherAttendanceClient(
                  <span className="text-2xl leading-none">{new Date(activeSession.date).toLocaleDateString(locale, { day: 'numeric' })}</span>
               </div>
               <div>
-                <h3 className="text-xl font-black text-on-surface uppercase tracking-tight">Marking Attendance</h3>
+                <h3 className="text-xl font-black text-on-surface uppercase tracking-tight">{t('takeAttendance')}</h3>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black rounded uppercase tracking-widest">
                     {assignedClasses.find((c) => c.id === activeSession.classId)?.name}
                   </span>
-                  <span className="text-[10px] font-bold text-outline uppercase tracking-widest leading-none">• {students.length} Students</span>
+                  <span className="text-[10px] font-bold text-outline uppercase tracking-widest leading-none">• {students.length} {t('headcount')}</span>
                 </div>
               </div>
             </div>
@@ -133,7 +134,7 @@ export function TeacherAttendanceClient(
                  className="h-12 px-6 rounded-xl border border-outline-variant/30 text-[11px] font-black uppercase tracking-widest text-outline hover:bg-surface-container-high transition-all"
                  disabled={isPending}
                >
-                 Cancel
+                 {tc('cancel')}
                </button>
                <button 
                  onClick={handleSaveAttendance} 
@@ -241,7 +242,7 @@ export function TeacherAttendanceClient(
                        </div>
                     </td>
                     <td className="px-8 py-5 font-black text-sm text-on-surface uppercase tracking-tight">{s.class?.name}</td>
-                    <td className="px-8 py-5 font-bold text-xs text-outline tabular-nums italic">{p} Recorded Présences</td>
+                    <td className="px-8 py-5 font-bold text-xs text-outline tabular-nums italic">{p} {t('recordedCount')}</td>
                     <td className="px-8 py-5 text-end">
                        <Link href={`/teacher/attendance/${s.id}`} className="h-10 px-6 inline-flex items-center rounded-xl bg-surface-container-high hover:bg-on-surface hover:text-white text-[10px] font-black uppercase tracking-widest transition-all opacity-0 group-hover:opacity-100">{t('details')}</Link>
                     </td>
@@ -250,7 +251,7 @@ export function TeacherAttendanceClient(
               })}
               {sessions.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-8 py-20 text-center text-outline font-bold uppercase tracking-widest text-xs">No attendance history available</td>
+                  <td colSpan={4} className="px-8 py-20 text-center text-outline font-bold uppercase tracking-widest text-xs">{t('noSessions')}</td>
                 </tr>
               )}
             </tbody>
@@ -259,7 +260,7 @@ export function TeacherAttendanceClient(
       )}
 
       {/* CREATE SESSION MODAL */}
-      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="New Attendance Roll Call">
+      <Modal open={showCreate} onClose={() => setShowCreate(false)} title={t('newSession')}>
         <form action={handleOpenSession} className="space-y-8 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
@@ -267,7 +268,7 @@ export function TeacherAttendanceClient(
               <div className="relative group">
                 <span className="material-symbols-outlined absolute start-4 top-1/2 -translate-y-1/2 text-outline text-[22px] pointer-events-none">auto_stories</span>
                 <select name="class_id" className="w-full h-14 ps-12 pe-4 bg-surface-container-low border border-outline-variant/30 rounded-2xl text-sm font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none appearance-none cursor-pointer" required>
-                  <option value="">Choose Class</option>
+                  <option value="">{t('chooseClass')}</option>
                   {assignedClasses.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
@@ -297,7 +298,7 @@ export function TeacherAttendanceClient(
               className="h-14 px-8 rounded-2xl text-[10px] font-black text-outline uppercase tracking-widest hover:bg-surface-container-high transition-all"
               disabled={isPending}
             >
-              Cancel
+              {tc('cancel')}
             </button>
             <button 
               type="submit" 
